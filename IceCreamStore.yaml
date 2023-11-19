@@ -47,6 +47,34 @@ paths:
                 properties: {}
       operationId: get-menu
       description: Retrieve the current menu from the inventory database
+  /receipt:
+    get:
+      summary: Get receipt for order
+      responses:
+        '200':
+          description: "Receipt is created"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Receipt'
+              examples:
+                Get the receipt and total:
+                  value:
+                      - item: Strawberry
+                        count: 1
+                        price: 2.50
+                      - item: Chocolate
+                        count: 1
+                        price: 2.50
+                      - item: Whipped Cream
+                        count: 1
+                        price: 50
+            application/javascript:
+              schema:
+                type: object
+                properties: {}
+      operationId: get-receipt
+      description: Retreive the receipt for order
   /order:
     post:
       summary: Create New Order
@@ -142,6 +170,61 @@ paths:
     parameters: []
 components:
   schemas:
+    Receipt:
+      type: object
+      x-examples:
+        example-1:
+          receiptTimestamp: "2023-11-19 19:50:00"
+          waiter: "George Washington"
+          positions:
+            flavors:
+              - flavorName: Strawberry
+                count: 1
+                price: 2.50
+              - flavorName: Chocolate
+                count: 1
+                price: 2.50
+            toppings:
+              - toppingName: Sprinkles
+                count: 2
+                price: 0.50
+          total: 6.00
+      title: Receipt
+      description: 'Structure of receipt details'
+      properties:
+        receiptTimestamp:
+          type: string
+        waiter:
+          type: string
+        positions:
+          type: object
+          properties:
+            flavors:
+              type: object
+              properties:
+                flavorName:
+                  type: string
+                count:
+                  type: integer
+                  minimum: 1
+                price:
+                  type: number
+                  format: float
+                  minimum: 0.01
+              toppings:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    toppingName:
+                      type: string
+                    count:
+                      type: integer
+                      minimum: 1
+          total:
+            type: number
+            minimum: 0.01
+            format: float
     MenuInventory:
       type: object
       x-examples:
@@ -169,6 +252,7 @@ components:
                 type: string
               count:
                 type: integer
+                minimum: 1
         toppings:
           type: array
           items:
@@ -178,6 +262,7 @@ components:
                 type: string
               count:
                 type: integer
+                minimum: 1
   securitySchemes:
     x-api-key:
       name: abc123
